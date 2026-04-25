@@ -1,112 +1,1690 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OYP – Find Local Services</title>
-
+<title>OYP — Find Trusted Local Services Near You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
 <style>
-body{font-family:Inter,sans-serif;margin:0;background:#0e0e10;color:#fff}
-h1,h2,h3{font-family:"Space Grotesk",sans-serif}
+/* ─────────────────────────────────────
+   DESIGN TOKENS
+───────────────────────────────────── */
+:root{
+  --bg:#f4f3f0;
+  --bg2:#ffffff;
+  --bg3:#eceae6;
+  --surface:#ffffff;
+  --text:#0f0e0d;
+  --text2:#44433f;
+  --text3:#8c8b87;
+  --accent:#e85d26;
+  --accent-h:#d04f1d;
+  --accent2:#ff7a47;
+  --accent-soft:#fff1ea;
+  --accent-border:rgba(232,93,38,.22);
+  --border:#dddbd6;
+  --border-soft:#e8e6e1;
+  --shadow-xs:0 1px 4px rgba(0,0,0,.06);
+  --shadow-sm:0 2px 12px rgba(0,0,0,.07);
+  --shadow-md:0 6px 24px rgba(0,0,0,.10);
+  --shadow-lg:0 16px 48px rgba(0,0,0,.14);
+  --shadow-xl:0 24px 64px rgba(0,0,0,.18);
+  --nav-h:66px;
+  --star:#f59e0b;
+  --green:#15803d;
+  --green-bg:#f0fdf4;
+  --red:#dc2626;
+  --blue:#1d4ed8;
+  --radius-xs:6px;
+  --radius-sm:10px;
+  --radius:14px;
+  --radius-lg:20px;
+  --radius-xl:28px;
+}
+[data-theme=dark]{
+  --bg:#0c0b09;
+  --bg2:#151310;
+  --bg3:#1c1a17;
+  --surface:#181614;
+  --text:#ede9e4;
+  --text2:#a09d98;
+  --text3:#5e5c58;
+  --accent:#ff7043;
+  --accent-h:#e8601a;
+  --accent2:#ff9068;
+  --accent-soft:#1e1108;
+  --accent-border:rgba(255,112,67,.2);
+  --border:#252320;
+  --border-soft:#1e1c19;
+  --shadow-xs:0 1px 4px rgba(0,0,0,.25);
+  --shadow-sm:0 2px 12px rgba(0,0,0,.32);
+  --shadow-md:0 6px 24px rgba(0,0,0,.42);
+  --shadow-lg:0 16px 48px rgba(0,0,0,.52);
+  --shadow-xl:0 24px 64px rgba(0,0,0,.62);
+  --green:#22c55e;
+  --green-bg:#052e16;
+}
 
-.nav{display:flex;justify-content:space-between;padding:16px 40px;background:#111;position:fixed;width:100%;top:0}
-.nav button{background:#ff6a3d;border:none;color:#fff;padding:10px 16px;border-radius:8px}
+/* ─────────────────────────────────────
+   BASE
+───────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);color:var(--text);
+  overflow-x:hidden;
+  transition:background .28s,color .28s;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,.logo-text,.sec-title,.how-title,.why-title,.trust-num,.biz-name,.modal-name{
+  font-family:'Space Grotesk',sans-serif;
+}
+a{text-decoration:none;color:inherit;}
+button{font-family:'Inter',sans-serif;cursor:pointer;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+::selection{background:rgba(232,93,38,.18);color:var(--accent);}
 
-.hero{padding-top:120px;text-align:center;padding-bottom:80px}
-.hero h1{font-size:60px;margin-bottom:10px}
-.hero p{color:#aaa}
+/* ─────────────────────────────────────
+   NAV
+───────────────────────────────────── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:var(--nav-h);
+  background:rgba(244,243,240,.95);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 28px;gap:16px;
+  transition:background .28s,border-color .28s;
+}
+[data-theme=dark] .nav{background:rgba(12,11,9,.95);}
+.nav-logo{
+  display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;
+}
+.nav-logo-mark{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:800;color:#fff;
+  letter-spacing:-.5px;
+  box-shadow:0 4px 12px rgba(232,93,38,.35);
+  transition:transform .15s;
+}
+.nav-logo:hover .nav-logo-mark{transform:scale(1.07);}
+.logo-text{font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.4px;}
+.logo-text em{font-style:normal;color:var(--accent);}
 
-.search-box{display:flex;justify-content:center;margin-top:30px;gap:10px}
-.search-box input{padding:16px;border-radius:10px;border:none;width:250px}
-.search-box button{padding:16px 24px;border:none;background:#ff6a3d;color:#fff;border-radius:10px}
+/* nav search (compact) */
+.nav-search-compact{
+  flex:1;max-width:420px;
+  display:flex;align-items:center;
+  background:var(--bg3);
+  border:1.5px solid var(--border);
+  border-radius:10px;height:40px;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+  overflow:hidden;
+}
+.nav-search-compact:focus-within{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-soft);
+  background:var(--bg2);
+}
+.nav-search-compact input{
+  flex:1;border:none;outline:none;background:transparent;
+  padding:0 12px;font-family:'Inter',sans-serif;font-size:13.5px;color:var(--text);
+}
+.nav-search-compact input::placeholder{color:var(--text3);}
+.nav-search-compact button{
+  width:38px;height:40px;background:var(--accent);border:none;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;transition:background .15s;flex-shrink:0;
+}
+.nav-search-compact button:hover{background:var(--accent-h);}
 
-.section{padding:60px 40px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+/* center nav */
+.nav-center{display:flex;align-items:center;gap:2px;margin:0 auto;}
+.nav-link-pill{
+  font-size:13.5px;font-weight:500;color:var(--text2);
+  padding:7px 13px;border-radius:var(--radius-sm);
+  transition:background .15s,color .15s;white-space:nowrap;
+}
+.nav-link-pill:hover,.nav-link-pill.active{background:var(--bg3);color:var(--text);}
 
-.card{background:#18181b;padding:20px;border-radius:14px;cursor:pointer}
-.card:hover{transform:translateY(-5px)}
+/* categories dropdown */
+.nav-cat-wrap{position:relative;}
+.nav-cat-btn{
+  display:flex;align-items:center;gap:6px;
+  font-family:'Inter',sans-serif;font-size:13.5px;font-weight:500;color:var(--text2);
+  padding:7px 13px;border-radius:var(--radius-sm);background:none;border:none;
+  transition:background .15s,color .15s;white-space:nowrap;
+}
+.nav-cat-btn:hover,.nav-cat-wrap.open .nav-cat-btn{background:var(--bg3);color:var(--text);}
+.nav-cat-btn svg{transition:transform .2s;}
+.nav-cat-wrap.open .nav-cat-btn svg{transform:rotate(180deg);}
+.nav-cat-dropdown{
+  position:absolute;top:calc(100% + 8px);left:50%;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius);width:700px;
+  display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:12px;
+  box-shadow:var(--shadow-xl);
+  opacity:0;pointer-events:none;
+  transform:translateX(-50%) translateY(-8px);
+  transition:opacity .2s,transform .2s;
+}
+.nav-cat-wrap.open .nav-cat-dropdown{
+  opacity:1;pointer-events:all;transform:translateX(-50%) translateY(0);
+}
+.nav-cat-item{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 11px;border-radius:var(--radius-sm);
+  cursor:pointer;transition:background .12s;
+}
+.nav-cat-item:hover{background:var(--bg3);}
+.nci-icon{font-size:18px;}
+.nci-text{font-size:12.5px;font-weight:500;color:var(--text2);}
 
-.listing{background:#18181b;padding:20px;border-radius:14px}
-.rating{color:gold}
+/* nav right */
+.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.nav-login{
+  font-size:13.5px;font-weight:600;color:var(--text2);
+  padding:8px 16px;border-radius:var(--radius-sm);
+  border:1.5px solid var(--border);background:transparent;
+  transition:border-color .15s,color .15s,background .15s;
+}
+.nav-login:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+.nav-cta{
+  font-size:13.5px;font-weight:700;color:#fff;
+  padding:9px 18px;border-radius:var(--radius-sm);
+  background:var(--accent);border:none;
+  box-shadow:0 3px 12px rgba(232,93,38,.3);
+  transition:background .15s,transform .1s,box-shadow .15s;
+  white-space:nowrap;
+}
+.nav-cta:hover{background:var(--accent-h);transform:translateY(-1px);box-shadow:0 6px 18px rgba(232,93,38,.38);}
+.theme-btn{
+  width:36px;height:36px;border-radius:var(--radius-sm);
+  border:1.5px solid var(--border);background:var(--bg2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:background .15s;flex-shrink:0;
+}
+.theme-btn:hover{background:var(--bg3);}
+.ham-btn{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:8px;}
+.ham-btn span{width:20px;height:2px;background:var(--text2);border-radius:2px;}
 
+/* ─────────────────────────────────────
+   HERO
+───────────────────────────────────── */
+.hero{
+  padding-top:calc(var(--nav-h) + 60px);
+  padding-bottom:80px;
+  padding-left:24px;padding-right:24px;
+  background:
+    linear-gradient(168deg,#0e0904 0%,#1a1208 30%,#251a0c 55%,#180e06 80%,#0c0804 100%);
+  position:relative;overflow:hidden;text-align:center;
+}
+.hero-orb1{
+  position:absolute;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,93,38,.12) 0%,transparent 70%);
+  top:-120px;right:-120px;pointer-events:none;
+}
+.hero-orb2{
+  position:absolute;width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,122,71,.07) 0%,transparent 70%);
+  bottom:-80px;left:-80px;pointer-events:none;
+}
+.hero-grid-lines{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 0%,transparent 100%);
+}
+.hero-inner{position:relative;z-index:1;max-width:900px;margin:0 auto;}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(232,93,38,.14);border:1px solid rgba(232,93,38,.28);
+  color:#ff9a6c;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:6px 16px;border-radius:100px;margin-bottom:28px;
+}
+.eyebrow-dot{
+  width:6px;height:6px;border-radius:50%;background:#ff7043;
+  animation:blink 2s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
+
+.hero h1{
+  font-size:clamp(36px,6.5vw,76px);
+  font-weight:800;color:#f0ece6;
+  line-height:1.06;letter-spacing:-2.5px;
+  margin-bottom:20px;
+}
+.hero h1 em{
+  font-style:normal;
+  background:linear-gradient(90deg,#ff7a47,#e85d26);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  font-size:18px;color:#9a8e86;line-height:1.7;
+  max-width:480px;margin:0 auto 48px;font-weight:400;
+}
+
+/* ── SEARCH BAR (hero) ───────── */
+.search-engine{
+  max-width:780px;margin:0 auto 36px;
+  background:rgba(255,255,255,.06);
+  border:1.5px solid rgba(255,255,255,.12);
+  border-radius:var(--radius-xl);
+  padding:10px;
+  backdrop-filter:blur(20px) saturate(160%);
+  display:flex;gap:10px;
+  box-shadow:0 24px 64px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.04);
+  transition:border-color .2s,box-shadow .2s;
+}
+.search-engine:focus-within{
+  border-color:rgba(232,93,38,.4);
+  box-shadow:0 24px 64px rgba(0,0,0,.4),0 0 0 1px rgba(232,93,38,.15),0 0 0 4px rgba(232,93,38,.08);
+}
+.se-field{
+  flex:1;min-width:0;
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.08);
+  border-radius:var(--radius);padding:0 18px;
+}
+.se-field:focus-within{background:rgba(255,255,255,.12);}
+.se-field svg{opacity:.4;flex-shrink:0;color:#f0ece6;}
+.se-field input{
+  flex:1;border:none;outline:none;background:transparent;
+  color:#f0ece6;font-family:'Inter',sans-serif;font-size:15px;
+  padding:16px 0;min-width:0;
+}
+.se-field input::placeholder{color:rgba(240,236,230,.35);}
+.se-vdiv{width:1px;background:rgba(255,255,255,.1);align-self:stretch;margin:10px 0;flex-shrink:0;}
+.se-btn{
+  background:var(--accent);color:#fff;border:none;
+  padding:16px 32px;border-radius:var(--radius);
+  font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;
+  display:flex;align-items:center;gap:9px;white-space:nowrap;flex-shrink:0;
+  box-shadow:0 6px 20px rgba(232,93,38,.42);
+  transition:background .15s,transform .12s,box-shadow .15s;
+}
+.se-btn:hover{background:var(--accent-h);transform:translateY(-2px);box-shadow:0 10px 28px rgba(232,93,38,.52);}
+
+/* live hint */
+.search-hint{
+  font-size:12.5px;color:rgba(240,236,230,.45);
+  margin-top:14px;
+}
+.search-hint strong{color:rgba(240,236,230,.7);}
+
+/* quick tags */
+.quick-tags{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:20px;}
+.qt-label{font-size:12.5px;color:#68605a;}
+.qt{
+  font-size:12.5px;font-weight:500;color:#9a8a80;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);
+  padding:5px 14px;border-radius:100px;cursor:pointer;
+  transition:all .15s;
+}
+.qt:hover{background:rgba(255,255,255,.12);color:#f0ece6;border-color:rgba(255,255,255,.18);}
+
+/* hero stats */
+.hero-stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  max-width:600px;margin:52px auto 0;
+  border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-lg);
+  background:rgba(255,255,255,.03);backdrop-filter:blur(10px);
+  overflow:hidden;
+}
+.hs{padding:18px 16px;text-align:center;border-right:1px solid rgba(255,255,255,.07);}
+.hs:last-child{border-right:none;}
+.hs-n{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;color:#f0ece6;letter-spacing:-1px;}
+.hs-l{font-size:11px;color:#685e58;text-transform:uppercase;letter-spacing:.06em;margin-top:3px;}
+
+/* ─────────────────────────────────────
+   LIVE RESULTS BAR (appears after search)
+───────────────────────────────────── */
+.live-bar{
+  background:var(--accent-soft);border-bottom:2px solid var(--accent-border);
+  padding:10px 28px;
+  display:none;align-items:center;justify-content:space-between;gap:12px;
+  flex-wrap:wrap;
+}
+.live-bar.show{display:flex;}
+.live-bar-text{font-size:13.5px;font-weight:600;color:var(--accent);}
+.live-bar-clear{font-size:12.5px;color:var(--text3);cursor:pointer;padding:4px 10px;border-radius:6px;transition:background .12s;}
+.live-bar-clear:hover{background:var(--border);}
+
+/* ─────────────────────────────────────
+   SHARED LAYOUT
+───────────────────────────────────── */
+.sec{padding:72px 28px;}
+.sec-light{background:var(--bg);}
+.sec-white{background:var(--bg2);}
+.sec-dark{
+  background:linear-gradient(160deg,#0c0904 0%,#161009 50%,#1a1309 100%);
+}
+.wrap{max-width:1180px;margin:0 auto;}
+.sec-head{margin-bottom:36px;}
+.sec-head.center{text-align:center;}
+.sec-eyebrow{
+  display:inline-block;font-size:10.5px;font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:10px;
+}
+.sec-title{
+  font-size:clamp(22px,3.5vw,34px);font-weight:800;
+  color:var(--text);letter-spacing:-.8px;line-height:1.12;
+}
+.sec-dark .sec-title{color:#f0ece6;}
+.sec-sub{font-size:15px;color:var(--text3);margin-top:9px;line-height:1.7;max-width:500px;}
+.sec-head.center .sec-sub{margin:9px auto 0;}
+.sec-dark .sec-sub{color:#6a6058;}
+.see-all{
+  font-size:13px;font-weight:600;color:var(--accent);
+  display:inline-flex;align-items:center;gap:4px;
+  padding:7px 14px;border-radius:var(--radius-sm);
+  border:1.5px solid var(--accent-border);
+  background:var(--accent-soft);
+  transition:all .15s;
+}
+.see-all:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.row-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;}
+
+/* ─────────────────────────────────────
+   CATEGORIES
+───────────────────────────────────── */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:11px;}
+.cat-card{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:22px 12px 18px;text-align:center;cursor:pointer;
+  transition:border-color .2s,transform .2s,box-shadow .2s,background .2s;
+  position:relative;overflow:hidden;
+}
+.cat-card::before{
+  content:'';position:absolute;inset:0;
+  background:var(--accent);opacity:0;transition:opacity .2s;
+}
+.cat-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:var(--shadow-md);}
+.cat-card:hover::before{opacity:.04;}
+.cat-icon-wrap{
+  width:52px;height:52px;border-radius:14px;
+  background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 12px;font-size:26px;
+  transition:background .2s,transform .2s;
+  position:relative;z-index:1;
+}
+.cat-card:hover .cat-icon-wrap{background:var(--accent-soft);transform:scale(1.08);}
+.cat-label{font-size:12.5px;font-weight:600;color:var(--text2);position:relative;z-index:1;line-height:1.3;}
+.cat-count{font-size:11px;color:var(--text3);margin-top:3px;position:relative;z-index:1;}
+
+/* ─────────────────────────────────────
+   LISTINGS — PLATFORM CORE
+───────────────────────────────────── */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px;align-items:center;}
+.sort-label{font-size:13px;font-weight:600;color:var(--text3);margin-right:4px;}
+.fp{
+  padding:8px 18px;border-radius:100px;
+  border:1.5px solid var(--border);background:var(--surface);
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--text2);
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.fp:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+.fp.on{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 3px 10px rgba(232,93,38,.28);}
+
+.biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:20px;}
+.biz-card{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);
+  overflow:hidden;cursor:pointer;display:flex;flex-direction:column;
+  transition:border-color .2s,transform .22s,box-shadow .22s;
+}
+.biz-card:hover{border-color:var(--accent);transform:translateY(-6px);box-shadow:var(--shadow-lg);}
+
+/* thumb */
+.biz-thumb{
+  height:160px;
+  background:linear-gradient(135deg,var(--bg3) 0%,var(--border) 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:56px;position:relative;flex-shrink:0;
+}
+.biz-thumb-badge{
+  position:absolute;top:12px;left:12px;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:4px 10px;border-radius:7px;color:#fff;
+}
+.bb-open{background:var(--green);}
+.bb-closed{background:#64748b;}
+.bb-prem{background:linear-gradient(90deg,#92680a,#c8960a);}
+.biz-thumb-prem-icon{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.4);padding:4px 8px;border-radius:6px;font-size:11px;color:#f0d060;}
+
+/* body */
+.biz-body{padding:18px;display:flex;flex-direction:column;flex:1;}
+.biz-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
+.biz-cat-tag{
+  font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--accent);background:var(--accent-soft);padding:3px 9px;border-radius:6px;
+  white-space:nowrap;
+}
+.biz-dist{font-size:11.5px;color:var(--text3);white-space:nowrap;}
+.biz-name{font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.3;}
+.biz-stars-row{display:flex;align-items:center;gap:7px;margin-bottom:10px;}
+.stars{display:flex;gap:1px;}
+.s{font-size:14px;color:var(--border);}
+.s.on{color:var(--star);}
+.biz-rnum{font-size:14px;font-weight:700;color:var(--text);}
+.biz-rcount{font-size:12px;color:var(--text3);}
+.biz-meta{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.biz-meta-row{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--text2);line-height:1.45;}
+.biz-meta-row svg{flex-shrink:0;margin-top:2px;opacity:.55;}
+.biz-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.biz-chip{
+  font-size:11px;font-weight:500;color:var(--text3);
+  background:var(--bg3);padding:4px 10px;border-radius:6px;
+}
+.biz-footer{
+  display:flex;gap:8px;border-top:1px solid var(--border-soft);padding-top:14px;margin-top:auto;
+}
+.btn-call{
+  flex:1;background:var(--accent);color:#fff;border:none;
+  padding:11px 14px;border-radius:var(--radius-sm);
+  font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:background .15s,box-shadow .15s;
+  box-shadow:0 3px 10px rgba(232,93,38,.25);
+}
+.btn-call:hover{background:var(--accent-h);box-shadow:0 5px 14px rgba(232,93,38,.35);}
+.btn-view{
+  background:var(--bg3);color:var(--text2);border:none;
+  padding:11px 14px;border-radius:var(--radius-sm);
+  font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:background .15s,color .15s;
+}
+.btn-view:hover{background:var(--blue);color:#fff;}
+.btn-save{
+  width:42px;height:42px;flex-shrink:0;
+  background:var(--bg3);border:none;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;transition:background .15s;
+}
+.btn-save:hover,.btn-save.on{background:#ffe4e0;}
+
+/* empty state */
+.empty-state{
+  grid-column:1/-1;text-align:center;padding:60px 20px;
+}
+.empty-icon{font-size:48px;margin-bottom:16px;}
+.empty-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.empty-sub{font-size:14px;color:var(--text3);}
+
+/* ─────────────────────────────────────
+   HOW IT WORKS
+───────────────────────────────────── */
+.how-steps{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px;
+  position:relative;
+}
+.how-step{
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--radius);padding:30px 24px;text-align:center;
+  transition:border-color .2s,transform .2s;
+  position:relative;
+}
+.how-step:hover{border-color:rgba(232,93,38,.3);transform:translateY(-4px);}
+.how-step-num{
+  width:46px;height:46px;border-radius:13px;background:var(--accent);
+  color:#fff;font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;margin:0 auto 18px;
+  box-shadow:0 4px 14px rgba(232,93,38,.35);
+}
+.how-step-icon{font-size:32px;margin-bottom:14px;display:block;}
+.how-title{font-size:16px;font-weight:700;color:#f0ece6;margin-bottom:10px;}
+.how-desc{font-size:13.5px;color:#6a6058;line-height:1.7;}
+.how-connector{
+  position:absolute;top:38px;right:-14px;
+  font-size:20px;color:rgba(232,93,38,.3);z-index:1;
+}
+.how-step:last-child .how-connector{display:none;}
+
+/* ─────────────────────────────────────
+   WHY CHOOSE US
+───────────────────────────────────── */
+.why-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
+.why-card{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:26px 22px;cursor:default;
+  transition:border-color .2s,transform .2s,box-shadow .2s;
+}
+.why-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:var(--shadow-md);}
+.why-icon{
+  width:50px;height:50px;border-radius:13px;
+  background:var(--accent-soft);border:1.5px solid var(--accent-border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-bottom:16px;
+  transition:transform .2s;
+}
+.why-card:hover .why-icon{transform:scale(1.1) rotate(-3deg);}
+.why-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.why-desc{font-size:13px;color:var(--text3);line-height:1.7;}
+
+/* ─────────────────────────────────────
+   TRUST STATS
+───────────────────────────────────── */
+.trust-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px;}
+.trust-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--radius);padding:28px 20px;text-align:center;
+  transition:border-color .2s,transform .2s;
+}
+.trust-card:hover{border-color:rgba(232,93,38,.3);transform:translateY(-3px);}
+.trust-icon{font-size:30px;margin-bottom:12px;display:block;}
+.trust-num{font-size:36px;font-weight:800;color:#f0ece6;letter-spacing:-1.5px;line-height:1;}
+.trust-label{font-size:12px;color:#6a6058;text-transform:uppercase;letter-spacing:.07em;margin-top:7px;}
+
+/* ─────────────────────────────────────
+   FOR BUSINESS
+───────────────────────────────────── */
+.forbiz{
+  background:linear-gradient(130deg,#120a04 0%,#1e1208 40%,#170e06 80%,#0e0804 100%);
+  border-radius:28px;padding:56px 52px;
+  display:flex;align-items:center;justify-content:space-between;gap:36px;flex-wrap:wrap;
+  border:1px solid rgba(232,93,38,.18);position:relative;overflow:hidden;
+}
+.forbiz::before{
+  content:'';position:absolute;right:-100px;top:-100px;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,93,38,.11) 0%,transparent 70%);
+  pointer-events:none;
+}
+.forbiz-label{
+  font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:#ff9a6c;margin-bottom:14px;
+}
+.forbiz-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(24px,3.5vw,38px);font-weight:800;
+  color:#f0ece6;letter-spacing:-1px;line-height:1.12;margin-bottom:14px;
+}
+.forbiz-sub{font-size:15px;color:#6a6058;line-height:1.7;max-width:480px;}
+.forbiz-sub strong{color:#ff9a6c;}
+.forbiz-btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;}
+.forbiz-cta{
+  background:var(--accent);color:#fff;border:none;
+  padding:14px 28px;border-radius:var(--radius-sm);
+  font-family:'Space Grotesk',sans-serif;font-size:14.5px;font-weight:700;
+  display:flex;align-items:center;gap:9px;
+  box-shadow:0 4px 20px rgba(232,93,38,.38);
+  transition:background .15s,transform .12s;
+}
+.forbiz-cta:hover{background:var(--accent-h);transform:translateY(-2px);}
+.forbiz-outline{
+  background:rgba(255,255,255,.07);color:#d0c8c0;border:1.5px solid rgba(255,255,255,.13);
+  padding:14px 24px;border-radius:var(--radius-sm);
+  font-family:'Inter',sans-serif;font-size:14.5px;font-weight:600;
+  transition:background .15s;
+}
+.forbiz-outline:hover{background:rgba(255,255,255,.12);}
+.forbiz-perks{
+  display:flex;flex-direction:column;gap:12px;flex-shrink:0;position:relative;z-index:1;
+}
+.forbiz-perk{
+  display:flex;align-items:center;gap:11px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:14px 18px;min-width:220px;
+}
+.fp-icon{font-size:22px;}
+.fp-text{font-size:13px;font-weight:600;color:#c0b8b0;}
+
+/* ─────────────────────────────────────
+   TESTIMONIALS
+───────────────────────────────────── */
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px;}
+.testi-card{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:24px;transition:border-color .2s,box-shadow .2s,transform .2s;
+}
+.testi-card:hover{border-color:var(--accent);box-shadow:var(--shadow-md);transform:translateY(-3px);}
+.testi-stars{display:flex;gap:3px;margin-bottom:14px;}
+.ts{font-size:16px;color:var(--star);}
+.testi-text{
+  font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:18px;
+  font-style:italic;
+}
+.testi-bottom{display:flex;align-items:center;gap:12px;}
+.testi-av{
+  width:44px;height:44px;border-radius:50%;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;color:#fff;flex-shrink:0;
+}
+.testi-name{font-size:14px;font-weight:700;color:var(--text);}
+.testi-biz{font-size:12px;color:var(--accent);font-weight:600;margin-top:1px;}
+.testi-date{font-size:11px;color:var(--text3);margin-top:1px;}
+
+/* ─────────────────────────────────────
+   CITIES
+───────────────────────────────────── */
+.city-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+.city-card{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:16px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;
+  transition:border-color .2s,background .2s,transform .18s;
+}
+.city-card:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-2px);}
+.city-emoji{font-size:22px;flex-shrink:0;}
+.city-name{font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:var(--text);}
+.city-count{font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* ─────────────────────────────────────
+   APP DOWNLOAD
+───────────────────────────────────── */
+.app-sec{
+  background:var(--accent);padding:64px 28px;
+  text-align:center;position:relative;overflow:hidden;
+}
+.app-sec::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(255,255,255,.1) 0%,transparent 70%);
+  pointer-events:none;
+}
+.app-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:12px;}
+.app-title{font-size:clamp(26px,4.5vw,48px);font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:14px;}
+.app-sub{font-size:16px;color:rgba(255,255,255,.72);max-width:440px;margin:0 auto 36px;line-height:1.7;}
+.app-btns{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;}
+.app-btn{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(0,0,0,.22);border:1.5px solid rgba(255,255,255,.25);
+  color:#fff;padding:14px 24px;border-radius:14px;cursor:pointer;
+  transition:background .15s,transform .12s;text-align:left;
+}
+.app-btn:hover{background:rgba(0,0,0,.38);transform:translateY(-2px);}
+.app-btn-icon{font-size:28px;line-height:1;}
+.app-btn-sub{font-size:10px;opacity:.75;text-transform:uppercase;letter-spacing:.08em;}
+.app-btn-main{font-size:16px;font-weight:700;font-family:'Space Grotesk',sans-serif;}
+
+/* ─────────────────────────────────────
+   TRENDING / DEALS
+───────────────────────────────────── */
+.trending-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:8px;}
+.trend-row{
+  display:flex;align-items:center;gap:11px;
+  padding:12px 15px;background:var(--surface);
+  border:1.5px solid var(--border);border-radius:10px;
+  cursor:pointer;transition:all .18s;
+}
+.trend-row:hover{border-color:var(--accent);transform:translateX(4px);background:var(--accent-soft);}
+.trend-n{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:800;color:var(--accent);min-width:28px;opacity:.7;}
+.trend-txt{font-size:13px;font-weight:500;color:var(--text2);flex:1;line-height:1.4;}
+.trend-arr{font-size:14px;color:var(--text3);opacity:.45;}
+
+.deals-strip{display:flex;gap:9px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;}
+.deals-strip::-webkit-scrollbar{display:none;}
+.deal-chip{
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
+  padding:9px 16px;background:var(--surface);border:1.5px solid var(--border);
+  border-radius:100px;cursor:pointer;transition:all .18s;
+}
+.deal-chip:hover{border-color:var(--accent);background:var(--accent-soft);}
+.deal-badge{font-size:10px;font-weight:700;background:var(--accent);color:#fff;padding:2px 8px;border-radius:100px;}
+
+/* ─────────────────────────────────────
+   INFO PANELS (guide/ql/verticals)
+───────────────────────────────────── */
+.two-panels{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px;}
+.info-panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:26px;}
+.info-panel h3{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:7px;}
+.t-pill{
+  padding:7px 13px;background:var(--bg3);border:1.5px solid var(--border);
+  border-radius:100px;font-size:12.5px;font-weight:500;color:var(--text2);
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.t-pill:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+.bguide-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;}
+.bguide-item{
+  display:flex;align-items:center;gap:9px;padding:10px 14px;
+  background:var(--surface);border:1.5px solid var(--border);border-radius:10px;
+  cursor:pointer;transition:all .15s;
+}
+.bguide-item:hover{border-color:var(--accent);background:var(--accent-soft);}
+.bg-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;flex-shrink:0;}
+.bg-txt{font-size:12.5px;font-weight:500;color:var(--text2);}
+.vert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:7px;}
+.vert-item{
+  padding:9px 13px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;
+  font-size:12.5px;font-weight:500;color:var(--text2);cursor:pointer;
+  transition:all .15s;display:flex;align-items:center;gap:6px;
+}
+.vert-item::before{content:'▸';color:var(--accent);font-size:10.5px;}
+.vert-item:hover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);}
+
+/* ─────────────────────────────────────
+   MODAL
+───────────────────────────────────── */
+.modal-ov{
+  position:fixed;inset:0;z-index:600;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.modal-ov.open{opacity:1;pointer-events:all;}
+.modal-box{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:24px;width:100%;max-width:560px;
+  max-height:90vh;overflow-y:auto;padding:32px;
+  transform:translateY(24px) scale(.97);transition:transform .28s cubic-bezier(.34,1.56,.64,1);
+}
+.modal-ov.open .modal-box{transform:translateY(0) scale(1);}
+.modal-close{
+  float:right;background:var(--bg3);border:none;width:32px;height:32px;
+  border-radius:9px;font-size:16px;color:var(--text3);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:background .15s;
+}
+.modal-close:hover{background:var(--border);}
+.modal-icon{font-size:58px;text-align:center;display:block;margin-bottom:16px;}
+.modal-cat{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin-bottom:5px;}
+.modal-name{font-size:24px;font-weight:800;color:var(--text);margin-bottom:12px;}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;}
+.mg-item{background:var(--bg3);border-radius:11px;padding:13px;}
+.mg-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:3px;}
+.mg-val{font-size:13.5px;font-weight:600;color:var(--text);}
+.modal-acts{display:flex;gap:10px;margin-top:20px;}
+.modal-acts button{
+  flex:1;padding:13px;border-radius:12px;border:none;
+  font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;transition:background .15s;
+}
+.m-call{background:var(--accent);color:#fff;}
+.m-call:hover{background:var(--accent-h);}
+.m-wp{background:#25D366;color:#fff;}
+.m-wp:hover{background:#1fba5a;}
+
+/* ─────────────────────────────────────
+   TOAST
+───────────────────────────────────── */
+.toast{
+  position:fixed;bottom:28px;right:28px;z-index:700;
+  background:var(--text);color:var(--bg);
+  padding:13px 22px;border-radius:13px;font-size:13.5px;font-weight:600;
+  display:flex;align-items:center;gap:9px;
+  box-shadow:var(--shadow-xl);
+  transform:translateY(90px);opacity:0;transition:transform .32s cubic-bezier(.34,1.56,.64,1),opacity .25s;
+}
+.toast.on{transform:translateY(0);opacity:1;}
+
+/* ─────────────────────────────────────
+   FOOTER
+───────────────────────────────────── */
+footer{background:#090807;border-top:1px solid #161310;padding:64px 28px 32px;}
+.foot-wrap{max-width:1180px;margin:0 auto;}
+.foot-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:40px;margin-bottom:52px;}
+.foot-logo-text{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;color:var(--accent);display:block;margin-bottom:13px;}
+.foot-desc{font-size:13px;color:#3e3a36;line-height:1.8;max-width:220px;}
+.foot-social-label{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4e4840;margin:20px 0 11px;}
+.soc-row{display:flex;gap:8px;flex-wrap:wrap;}
+.soc-btn{
+  width:36px;height:36px;border-radius:9px;
+  background:#131110;border:1px solid #1e1c18;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s,border-color .15s;
+}
+.soc-btn:hover{background:#1e1b17;border-color:#2a2620;}
+.soc-btn svg{width:16px;height:16px;}
+.foot-col h4{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:#6e6458;margin-bottom:16px;
+}
+.foot-col ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.foot-col ul li a{font-size:13px;color:#3e3a36;transition:color .15s;}
+.foot-col ul li a:hover{color:#ff9a6c;}
+.foot-hr{border:none;border-top:1px solid #131110;margin:0 0 24px;}
+.foot-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:12px;color:#2e2c28;flex-wrap:wrap;gap:12px;
+}
+.foot-bottom a{color:#3e3a36;transition:color .15s;}
+.foot-bottom a:hover{color:#ff9a6c;}
+
+/* ─────────────────────────────────────
+   REVEAL ANIMATION
+───────────────────────────────────── */
+.rv{opacity:0;transform:translateY(32px);transition:opacity .65s ease,transform .65s ease;}
+.rv.in{opacity:1;transform:translateY(0);}
+.rv2{opacity:0;transform:translateY(32px);transition:opacity .65s .12s ease,transform .65s .12s ease;}
+.rv2.in{opacity:1;transform:translateY(0);}
+.rv3{opacity:0;transform:translateY(32px);transition:opacity .65s .24s ease,transform .65s .24s ease;}
+.rv3.in{opacity:1;transform:translateY(0);}
+
+@keyframes fup{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:translateY(0);}}
+.f1{animation:fup .6s ease forwards;}
+.f2{animation:fup .6s .14s ease both;}
+.f3{animation:fup .6s .26s ease both;}
+.f4{animation:fup .6s .38s ease both;}
+
+/* ─────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────── */
+@media(max-width:1100px){
+  .nav-center{display:none;}
+  .nav-cat-dropdown{width:min(700px,95vw);}
+  .foot-top{grid-template-columns:1fr 1fr 1fr;}
+  .forbiz{flex-direction:column;}
+}
+@media(max-width:768px){
+  .ham-btn{display:flex;}
+  .nav-search-compact{display:none;}
+  .search-engine{flex-direction:column;}
+  .se-vdiv{display:none;}
+  .hero-stats-row{grid-template-columns:repeat(2,1fr);}
+  .foot-top{grid-template-columns:1fr 1fr;}
+  .forbiz{padding:36px 24px;}
+  .modal-grid{grid-template-columns:1fr;}
+}
+@media(max-width:540px){
+  .foot-top{grid-template-columns:1fr;}
+  .biz-grid{grid-template-columns:1fr;}
+  .app-btns{flex-direction:column;align-items:center;}
+  .modal-acts{flex-direction:column;}
+  .hero-stats-row{grid-template-columns:repeat(2,1fr);}
+  .forbiz-perks{width:100%;}
+  .forbiz-perk{min-width:0;}
+}
 </style>
 </head>
-
 <body>
 
-<div class="nav">
-  <div>OYP</div>
-  <div>
-    <button>List Business</button>
+<!-- ══════════════════════════════════
+     NAVBAR
+══════════════════════════════════ -->
+<nav class="nav" id="mainNav">
+  <a class="nav-logo" href="#" onclick="scrollTo({top:0,behavior:'smooth'})">
+    <div class="nav-logo-mark">OYP</div>
+    <span class="logo-text">One<em>Yellow</em>Page</span>
+  </a>
+
+  <!-- compact search in nav -->
+  <div class="nav-search-compact">
+    <input type="text" id="navQ" placeholder="Search services, businesses…" autocomplete="off">
+    <button onclick="doNavSearch()">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </button>
   </div>
+
+  <!-- center links -->
+  <div class="nav-center">
+    <div class="nav-cat-wrap" id="catWrap">
+      <button class="nav-cat-btn" onclick="toggleDrop()">
+        Categories
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="nav-cat-dropdown" id="catDrop"></div>
+    </div>
+    <a class="nav-link-pill" href="#listings">Businesses</a>
+    <a class="nav-link-pill" href="#trending">Trending</a>
+    <a class="nav-link-pill" href="#deals">Deals</a>
+    <a class="nav-link-pill" href="#cities">Cities</a>
+  </div>
+
+  <div class="nav-right">
+    <button class="nav-login" onclick="showToast('👤 Login / Signup — coming soon!')">Login</button>
+    <button class="nav-cta" onclick="showToast('🚀 Free listing — coming soon!')">List Your Business</button>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+    <div class="ham-btn" onclick="showToast('📱 Mobile menu coming soon!')">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- live search result bar -->
+<div class="live-bar" id="liveBar" style="margin-top:var(--nav-h)">
+  <span class="live-bar-text" id="liveBarText"></span>
+  <span class="live-bar-clear" onclick="clearSearch()">✕ Clear</span>
 </div>
 
+<!-- ══════════════════════════════════
+     HERO
+══════════════════════════════════ -->
 <section class="hero">
-  <h1>Find Trusted Local Services</h1>
-  <p>Search, compare and connect instantly</p>
+  <div class="hero-orb1"></div>
+  <div class="hero-orb2"></div>
+  <div class="hero-grid-lines"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow f1">
+      <span class="eyebrow-dot"></span>
+      India's #1 Business Discovery Platform
+    </div>
+    <h1 class="f2">Find <em>Trusted</em> Local<br>Services Near You</h1>
+    <p class="hero-sub f3">Search, Compare &amp; Connect Instantly with verified businesses in your city — real reviews, direct contact, zero hassle.</p>
 
-  <div class="search-box">
-    <input id="service" placeholder="What service?">
-    <input id="location" placeholder="Location">
-    <button onclick="search()">Search</button>
+    <!-- MAIN SEARCH ENGINE -->
+    <div class="search-engine f3" id="searchEngine">
+      <div class="se-field" style="flex:1.8">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="heroQ" placeholder='What are you looking for? e.g. "Plumber"' autocomplete="off" oninput="onHeroInput()">
+      </div>
+      <div class="se-vdiv"></div>
+      <div class="se-field" style="flex:1">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <input type="text" id="heroL" placeholder="City or area" value="Chandigarh" autocomplete="off">
+      </div>
+      <button class="se-btn" onclick="doHeroSearch()">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Search Now
+      </button>
+    </div>
+
+    <div class="search-hint f3">💡 Try: <strong>Plumber in Chandigarh</strong> · <strong>Best Restaurants near me</strong> · <strong>AC Repair</strong></div>
+
+    <div class="quick-tags f4">
+      <span class="qt-label">Quick search:</span>
+      <span class="qt" onclick="quickSearch('Plumber')">🔧 Plumber</span>
+      <span class="qt" onclick="quickSearch('Electrician')">⚡ Electrician</span>
+      <span class="qt" onclick="quickSearch('Restaurant')">🍽️ Restaurant</span>
+      <span class="qt" onclick="quickSearch('Salon')">💇 Salon</span>
+      <span class="qt" onclick="quickSearch('Doctor')">🏥 Doctor</span>
+      <span class="qt" onclick="quickSearch('Car Service')">🚗 Car Service</span>
+    </div>
+
+    <div class="hero-stats-row f4">
+      <div class="hs"><div class="hs-n">10M+</div><div class="hs-l">Businesses</div></div>
+      <div class="hs"><div class="hs-n">500+</div><div class="hs-l">Cities</div></div>
+      <div class="hs"><div class="hs-n">85M+</div><div class="hs-l">Reviews</div></div>
+      <div class="hs"><div class="hs-n">24/7</div><div class="hs-l">Support</div></div>
+    </div>
   </div>
 </section>
 
-<section class="section">
-  <h2>Popular Categories</h2>
-  <div class="grid">
-    <div class="card" onclick="quick('Plumber')">Plumber</div>
-    <div class="card" onclick="quick('Electrician')">Electrician</div>
-    <div class="card" onclick="quick('Salon')">Salon</div>
-    <div class="card" onclick="quick('Restaurant')">Restaurant</div>
+<!-- ══════════════════════════════════
+     CATEGORIES
+══════════════════════════════════ -->
+<section class="sec sec-white" id="categories">
+  <div class="wrap">
+    <div class="row-head rv">
+      <div class="sec-head">
+        <div class="sec-eyebrow">Browse by type</div>
+        <div class="sec-title">Popular Categories</div>
+        <div class="sec-sub">Explore 500+ service categories across India</div>
+      </div>
+      <a href="#" class="see-all">All Categories →</a>
+    </div>
+    <div class="cat-grid rv2" id="catGrid"></div>
   </div>
 </section>
 
-<section class="section">
-  <h2>Top Listings</h2>
-  <div id="results" class="grid"></div>
+<!-- ══════════════════════════════════
+     FEATURED LISTINGS (THE CORE)
+══════════════════════════════════ -->
+<section class="sec sec-light" id="listings">
+  <div class="wrap">
+    <div class="row-head rv">
+      <div class="sec-head">
+        <div class="sec-eyebrow">Popular in Chandigarh</div>
+        <div class="sec-title" id="listTitle">⭐ Top Rated Near You</div>
+        <div class="sec-sub" id="listSub">Verified businesses, handpicked &amp; highly rated by real users</div>
+      </div>
+      <a href="#" class="see-all">View all →</a>
+    </div>
+    <div class="filter-row rv">
+      <span class="sort-label">Filter:</span>
+      <div id="filterPills"></div>
+    </div>
+    <div class="biz-grid" id="bizGrid"></div>
+  </div>
 </section>
+
+<!-- ══════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════ -->
+<section class="sec sec-dark">
+  <div class="wrap">
+    <div class="sec-head center rv">
+      <div class="sec-eyebrow">Simple Process</div>
+      <div class="sec-title">How OYP Works</div>
+      <div class="sec-sub">Three simple steps to find and connect with the best local business</div>
+    </div>
+    <div class="how-steps rv2" id="howSteps"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     WHY CHOOSE US
+══════════════════════════════════ -->
+<section class="sec sec-white" id="why">
+  <div class="wrap">
+    <div class="sec-head center rv">
+      <div class="sec-eyebrow">Our Advantage</div>
+      <div class="sec-title">Why Choose OYP?</div>
+      <div class="sec-sub">We're not just a directory — we're your trusted local guide</div>
+    </div>
+    <div class="why-grid rv2" id="whyGrid"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     TRUST STATS
+══════════════════════════════════ -->
+<section class="sec sec-dark">
+  <div class="wrap">
+    <div class="sec-head center rv">
+      <div class="sec-eyebrow">By the numbers</div>
+      <div class="sec-title">Trusted by Millions</div>
+    </div>
+    <div class="trust-grid rv2" id="trustGrid"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     TRENDING SEARCHES
+══════════════════════════════════ -->
+<section class="sec sec-light" id="trending">
+  <div class="wrap">
+    <div class="row-head rv">
+      <div class="sec-head">
+        <div class="sec-eyebrow">What's hot right now</div>
+        <div class="sec-title">🔥 Trending Searches</div>
+        <div class="sec-sub">Most searched services across India today</div>
+      </div>
+      <a href="#" class="see-all">View all →</a>
+    </div>
+    <div class="trending-grid rv2" id="trendGrid"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     DEALS & OFFERS
+══════════════════════════════════ -->
+<section class="sec sec-white" id="deals">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="sec-eyebrow">Exclusive</div>
+      <div class="sec-title">🏷️ Deals &amp; Offers</div>
+      <div class="sec-sub">Special discounts from top brands, banks &amp; stores</div>
+    </div>
+    <div class="deals-strip rv2" id="dealsStrip"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     FOR BUSINESS OWNERS
+══════════════════════════════════ -->
+<section class="sec sec-light" id="forbiz">
+  <div class="wrap">
+    <div class="forbiz rv">
+      <div style="position:relative;z-index:1;flex:1;min-width:280px">
+        <div class="forbiz-label">For Business Owners</div>
+        <div class="forbiz-title">Grow Your Business<br>With OYP</div>
+        <div class="forbiz-sub">Get more customers, more calls, more visibility. Reach <strong>50M+ users</strong> actively searching for your services every month.</div>
+        <div class="forbiz-btns">
+          <button class="forbiz-cta" onclick="showToast('🚀 Free listing — coming soon!')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            List Your Business Free
+          </button>
+          <button class="forbiz-outline" onclick="showToast('📖 Learn more — coming soon!')">Learn More →</button>
+        </div>
+      </div>
+      <div class="forbiz-perks">
+        <div class="forbiz-perk"><span class="fp-icon">📈</span><span class="fp-text">10x more visibility</span></div>
+        <div class="forbiz-perk"><span class="fp-icon">📞</span><span class="fp-text">Direct customer calls</span></div>
+        <div class="forbiz-perk"><span class="fp-icon">⭐</span><span class="fp-text">Build your reputation</span></div>
+        <div class="forbiz-perk"><span class="fp-icon">🆓</span><span class="fp-text">Always free to start</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════ -->
+<section class="sec sec-white" id="testimonials">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="sec-eyebrow">Real People, Real Reviews</div>
+      <div class="sec-title">⭐ What Users Say</div>
+      <div class="sec-sub">Trusted by millions of customers across India</div>
+    </div>
+    <div class="testi-grid rv2" id="testiGrid"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     CITIES (Location Browsing)
+══════════════════════════════════ -->
+<section class="sec sec-light" id="cities">
+  <div class="wrap">
+    <div class="row-head rv">
+      <div class="sec-head">
+        <div class="sec-eyebrow">Explore Locally</div>
+        <div class="sec-title">🗺️ Browse by City</div>
+        <div class="sec-sub">From Chandigarh to Chennai — find verified businesses everywhere</div>
+      </div>
+      <a href="#" class="see-all">All Cities →</a>
+    </div>
+    <div class="city-grid rv2" id="cityGrid"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     APP DOWNLOAD
+══════════════════════════════════ -->
+<section class="app-sec">
+  <div style="position:relative;z-index:1">
+    <div class="app-eyebrow">Mobile App</div>
+    <div class="app-title">Search Faster on the OYP App</div>
+    <div class="app-sub">Instant access to 10M+ businesses, real-time reviews and exclusive app-only deals.</div>
+    <div class="app-btns">
+      <div class="app-btn" onclick="showToast('▶ Google Play — coming soon!')">
+        <div class="app-btn-icon">▶</div>
+        <div><div class="app-btn-sub">Get it on</div><div class="app-btn-main">Google Play</div></div>
+      </div>
+      <div class="app-btn" onclick="showToast('🍎 App Store — coming soon!')">
+        <div class="app-btn-icon">🍎</div>
+        <div><div class="app-btn-sub">Download on the</div><div class="app-btn-main">App Store</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     OYP GUIDE + COLLECTIONS
+══════════════════════════════════ -->
+<section class="sec sec-white">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="sec-eyebrow">Knowledge Hub</div>
+      <div class="sec-title">Explore OYP</div>
+    </div>
+    <div class="two-panels rv2">
+      <div class="info-panel"><h3><span>📖</span> OYP Guide</h3><div class="tag-cloud" id="guideCloud"></div></div>
+      <div class="info-panel"><h3><span>🗂️</span> OYP Collections</h3><div class="tag-cloud" id="collCloud"></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-light">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="sec-eyebrow">Niche Services</div>
+      <div class="sec-title">🧭 OYP Business Guide</div>
+      <div class="sec-sub">Specialised listings &amp; niche services across India</div>
+    </div>
+    <div class="bguide-grid rv2" id="bguideGrid"></div>
+  </div>
+</section>
+
+<section class="sec sec-white">
+  <div class="wrap">
+    <div class="sec-head rv"><div class="sec-eyebrow">Navigate</div><div class="sec-title">⚡ Quick Links</div></div>
+    <div class="tag-cloud rv2" id="qlCloud"></div>
+  </div>
+</section>
+
+<section class="sec sec-light">
+  <div class="wrap">
+    <div class="sec-head rv"><div class="sec-eyebrow">Industries</div><div class="sec-title">🏢 OYP Verticals</div></div>
+    <div class="vert-grid rv2" id="vertGrid"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     FOOTER
+══════════════════════════════════ -->
+<footer>
+  <div class="foot-wrap">
+    <div class="foot-top">
+      <div>
+        <span class="foot-logo-text">OYP</span>
+        <p class="foot-desc">India's most trusted local business discovery platform. Connecting customers with verified businesses since 2024.</p>
+        <div class="foot-social-label">Follow us on</div>
+        <div class="soc-row">
+          <a class="soc-btn" href="#" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke-linecap="round"/></svg></a>
+          <a class="soc-btn" href="#" title="Facebook"><svg viewBox="0 0 24 24" fill="#4267B2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+          <a class="soc-btn" href="#" title="YouTube"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3" fill="#FF0000"/><polygon fill="#fff" points="10 8.5 16 12 10 15.5"/></svg></a>
+          <a class="soc-btn" href="#" title="LinkedIn"><svg viewBox="0 0 24 24" fill="#0A66C2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+          <a class="soc-btn" href="#" title="Twitter/X"><svg viewBox="0 0 24 24" fill="#d4d0cc"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+        </div>
+      </div>
+      <div class="foot-col"><h4>Company</h4><ul>
+        <li><a href="#">About Us</a></li><li><a href="#">Careers</a></li>
+        <li><a href="#">Investor Relations</a></li><li><a href="#">Media</a></li>
+        <li><a href="#">Testimonials</a></li><li><a href="#">What's New</a></li>
+      </ul></div>
+      <div class="foot-col"><h4>Categories</h4><ul>
+        <li><a href="#">Restaurants</a></li><li><a href="#">Doctors</a></li>
+        <li><a href="#">Salons & Spas</a></li><li><a href="#">Plumbers</a></li>
+        <li><a href="#">Electricians</a></li><li><a href="#">Real Estate</a></li>
+        <li><a href="#">Hotels</a></li>
+      </ul></div>
+      <div class="foot-col"><h4>For Business</h4><ul>
+        <li><a href="#">Free Listing</a></li><li><a href="#">Advertise</a></li>
+        <li><a href="#">Business Badge</a></li><li><a href="#">B2B Services</a></li>
+        <li><a href="#">Free GST Invoice</a></li><li><a href="#">MCA Data</a></li>
+      </ul></div>
+      <div class="foot-col"><h4>Support</h4><ul>
+        <li><a href="#">Customer Care</a></li><li><a href="#">Feedback</a></li>
+        <li><a href="#">Report a Bug</a></li><li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li><li><a href="#">Sitemap</a></li>
+      </ul></div>
+    </div>
+    <hr class="foot-hr">
+    <div class="foot-bottom">
+      <span>© 2025 OYP — One Yellow Page. All rights reserved. Made with ❤️ in India</span>
+      <span><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Sitemap</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-ov" id="modalOv" onclick="closeModal(event)">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ <span id="toastTxt"></span></div>
 
 <script>
-const data=[
-{name:"Sharma Electrician",rating:4.6,category:"Electrician",location:"Mohali"},
-{name:"Royal Salon",rating:4.4,category:"Salon",location:"Chandigarh"},
-{name:"Quick Plumber",rating:4.8,category:"Plumber",location:"Mohali"}
+/* ══════════════════════════════════
+   DATA
+══════════════════════════════════ */
+const CATS=[
+  {ic:'🍽️',n:'Restaurants',c:'2.4M'},{ic:'🏥',n:'Doctors',c:'890K'},{ic:'💇',n:'Salons',c:'1.2M'},
+  {ic:'🔧',n:'Plumbers',c:'340K'},{ic:'⚡',n:'Electricians',c:'520K'},{ic:'🎓',n:'Coaching',c:'780K'},
+  {ic:'🚗',n:'Car Service',c:'410K'},{ic:'🏋️',n:'Gyms',c:'320K'},{ic:'🏨',n:'Hotels',c:'650K'},
+  {ic:'💊',n:'Pharmacies',c:'480K'},{ic:'🐾',n:'Pet Care',c:'95K'},{ic:'📸',n:'Photography',c:'280K'},
+  {ic:'🏗️',n:'Construction',c:'390K'},{ic:'🛒',n:'Grocery',c:'920K'},{ic:'🎉',n:'Events',c:'210K'},
+  {ic:'🚚',n:'Packers',c:'175K'},{ic:'🧹',n:'Cleaning',c:'310K'},{ic:'💻',n:'IT Services',c:'540K'},
+  {ic:'📐',n:'Interior',c:'190K'},{ic:'🔑',n:'Real Estate',c:'870K'},
 ];
+const BIZDATA=[
+  {id:1,n:'Spice Garden',cat:'Restaurant',ic:'🍽️',r:4.7,rv:1240,addr:'12 MG Road, Bangalore',ph:'9876543210',time:'10am–11pm',tags:['North Indian','Biryani','Family'],open:true,prem:false,since:'2012',dist:'1.2 km',about:'Authentic North Indian cuisine with 100+ dishes. Family-friendly ambience, free parking.'},
+  {id:2,n:'Dr. Mehra Clinic',cat:'Doctor',ic:'🏥',r:4.9,rv:830,addr:'45 Civil Lines, Delhi',ph:'9123456789',time:'9am–7pm',tags:['General Physician','Pediatric'],open:true,prem:true,since:'2005',dist:'0.8 km',about:'Board-certified physician, 18+ years practice. Sunday appointments. Zero waiting guarantee.'},
+  {id:3,n:'Glamour Studio',cat:'Salon',ic:'💇',r:4.5,rv:2100,addr:'7 FC Road, Pune',ph:'9988776655',time:'9am–9pm',tags:['Bridal','Hair','Makeup'],open:false,prem:false,since:'2016',dist:'2.1 km',about:'Full-service unisex salon. Bridal packages, hair treatments and keratin services.'},
+  {id:4,n:'QuickFix Plumbing',cat:'Plumber',ic:'🔧',r:4.6,rv:580,addr:'Andheri West, Mumbai',ph:'9001234567',time:'24/7',tags:['Emergency','Pipe Repair','Bathroom'],open:true,prem:false,since:'2010',dist:'0.5 km',about:'Licensed plumbers 24/7. 30-minute response guaranteed. Free site inspection.'},
+  {id:5,n:'PowerCut Electricals',cat:'Electrician',ic:'⚡',r:4.8,rv:710,addr:'Sector 18, Noida',ph:'9876001234',time:'8am–8pm',tags:['Wiring','MCB','AC Install'],open:true,prem:true,since:'2008',dist:'1.8 km',about:'Certified electricians. Residential & commercial. ISI-approved materials. 1-year warranty.'},
+  {id:6,n:'Infinity Fitness',cat:'Gym',ic:'🏋️',r:4.4,rv:960,addr:'Koramangala, Bangalore',ph:'9080070060',time:'5am–11pm',tags:['CrossFit','Yoga','Personal Training'],open:true,prem:false,since:'2018',dist:'0.9 km',about:'Premium equipment, certified trainers, flexible memberships. Free first session!'},
+  {id:7,n:'Hotel Grand Vista',cat:'Hotel',ic:'🏨',r:4.6,rv:4300,addr:'Banjara Hills, Hyderabad',ph:'9701234500',time:'24/7',tags:['Luxury','Pool','Conference'],open:true,prem:true,since:'2002',dist:'3.4 km',about:'5-star luxury. Rooftop pool, spa, 3 restaurants. Breathtaking city-view rooms.'},
+  {id:8,n:'FocusClick Photography',cat:'Photography',ic:'📸',r:4.9,rv:375,addr:'Lokhandwala, Mumbai',ph:'9820099200',time:'By Appt.',tags:['Wedding','Portrait','Corporate'],open:true,prem:false,since:'2014',dist:'2.8 km',about:'Award-winning studio. Weddings, editorials, corporate. Drone photography available.'},
+];
+const HOW_DATA=[
+  {n:'01',ic:'🔍',t:'Search Service',d:'Type what you need — plumber, restaurant, doctor — and your city. Instant results.'},
+  {n:'02',ic:'📋',t:'Compare Options',d:'See ratings, reviews, timings and distance. Pick the best match with confidence.'},
+  {n:'03',ic:'📞',t:'Contact Instantly',d:'Call, WhatsApp or get directions to the business with a single tap. No forms.'},
+  {n:'04',ic:'⭐',t:'Leave a Review',d:'Help millions of others by sharing your experience. Build the community.'},
+];
+const WHY_DATA=[
+  {ic:'✅',t:'Verified Businesses',d:'Every listing is verified. Fake businesses get removed. 100% authentic.'},
+  {ic:'⭐',t:'Real Reviews Only',d:'No paid reviews, no fake ratings. Only genuine feedback from real customers.'},
+  {ic:'⚡',t:'Instant Contact',d:'Call, WhatsApp or get directions with one tap. No forms, no middlemen.'},
+  {ic:'🤖',t:'AI Recommendations',d:'Smart engine learns your preferences and surfaces the most relevant businesses.'},
+  {ic:'🔒',t:'Privacy Protected',d:'Your details are never shared without your explicit permission. Always secure.'},
+  {ic:'🆓',t:'100% Free',d:'Finding the right business is completely free. No hidden fees, no paywalls ever.'},
+];
+const TRUST_DATA=[
+  {ic:'🏢',n:'10M+',l:'Businesses Listed'},{ic:'👥',n:'50M+',l:'Happy Users'},
+  {ic:'🔍',n:'1B+',l:'Searches Processed'},{ic:'🌆',n:'500+',l:'Cities Covered'},
+  {ic:'⭐',n:'85M+',l:'Verified Reviews'},{ic:'🤝',n:'98%',l:'Satisfaction Rate'},
+];
+const TESTI_DATA=[
+  {n:'Rahul S.',biz:'Spice Garden',r:5,t:'Found this gem through OYP! The biryani is outstanding. OYP reviews were spot-on and saved me so much time.',d:'2 days ago'},
+  {n:'Priya M.',biz:'Dr. Mehra Clinic',r:5,t:'Dr. Mehra was thorough and patient. Found him on OYP in 2 minutes. The reviews gave me full confidence before calling.',d:'1 week ago'},
+  {n:'Amit K.',biz:'Glamour Studio',r:4,t:'My wife looked stunning on our wedding day. OYP helped us compare 5 salons before picking Glamour Studio.',d:'3 days ago'},
+  {n:'Deepa R.',biz:'Infinity Fitness',r:5,t:'OYP showed real photos and honest reviews. Joined Infinity Fitness same day and could not be happier.',d:'5 days ago'},
+  {n:'Suresh T.',biz:'QuickFix Plumbing',r:5,t:'Burst pipe at midnight. Found QuickFix on OYP, called them, fixed in 30 minutes. Absolute lifesavers!',d:'1 day ago'},
+  {n:'Kavya N.',biz:'Hotel Grand Vista',r:5,t:'OYP reviews for Grand Vista were accurate. The rooftop sunset view is breathtaking. Booked again already!',d:'4 days ago'},
+];
+const CITIES_DATA=[
+  {ic:'🌸',n:'Chandigarh',b:'320K'},{ic:'🏙️',n:'Mumbai',b:'2.8M'},{ic:'🌆',n:'Delhi',b:'3.1M'},
+  {ic:'🌇',n:'Bangalore',b:'2.2M'},{ic:'🌃',n:'Hyderabad',b:'1.6M'},{ic:'🏛️',n:'Chennai',b:'1.4M'},
+  {ic:'🌉',n:'Pune',b:'1.1M'},{ic:'🌁',n:'Kolkata',b:'1.3M'},{ic:'🏯',n:'Jaipur',b:'780K'},
+  {ic:'🌴',n:'Ahmedabad',b:'920K'},{ic:'🌿',n:'Mohali',b:'195K'},{ic:'🏔️',n:'Dehradun',b:'210K'},
+  {ic:'🌊',n:'Goa',b:'180K'},{ic:'🌴',n:'Surat',b:'640K'},{ic:'🎡',n:'Lucknow',b:'580K'},
+  {ic:'⛩️',n:'Indore',b:'460K'},
+];
+const TRENDING=['English Medium Schools','Packers And Movers (Within City)','Home Delivery Restaurants','Estate Agents For Land','Wedding Photographers','Income Tax Consultants','Newspaper Advertising Agencies','Hepatologist Doctors','Search Engine Optimization Services','Motorcycle Repair & Services-TVS','Tyre Dealers-JK','Tutorials For Ssc Cgl','Bitcoin Services','Tour Packages For Goa','Transporters For Kolkata','Tour Packages For Manali'];
+const DEALS=[
+  {ic:'🏦',n:'Kotak Mahindra Bank'},{ic:'🎬',n:'INOX Cinemas'},{ic:'🏦',n:'ICICI Bank'},
+  {ic:'🏦',n:'HDFC Bank'},{ic:'🎬',n:'PVR Cinemas'},{ic:'🏦',n:'Axis Bank'},
+  {ic:'🏦',n:'SBI'},{ic:'🛍️',n:'Lifestyle Stores'},{ic:'🍱',n:'Behrouz Biryani'},
+  {ic:'⌚',n:'Fastrack'},{ic:'📺',n:'Sony'},{ic:'🏦',n:'Yes Bank'},
+  {ic:'💻',n:'Croma'},{ic:'💎',n:'Joyalukkas Jewellery'},{ic:'💍',n:'Kalyan Jewellers'},
+  {ic:'📱',n:'Reliance Digital'},{ic:'🏋️',n:'Anytime Fitness'},{ic:'✂️',n:"Toni&Guy Salons"},
+  {ic:'🍔',n:'McDonalds'},{ic:'🍖',n:'Barbeque Nation'},{ic:'👖',n:"Levi's"},
+  {ic:'🍎',n:'Apple Store'},{ic:'📺',n:'LG'},{ic:'🏦',n:'IndusInd Bank'},
+];
+const GUIDE=['Loans','Government ID','Commodity','Pin Code','Visa','Holidays','IFSC Code','Currency Exchange','Finance','Cards','Glossary','Utility','Personal Care','B2B','Education','Hobbies','Spirituality','Sports and Outdoor','Healthcare','News','Travel','Automobile','Government Schemes','Baby Care and Parenting','Questions and Answers','Electronics','Census 2011'];
+const COLL=['Travel & Tourism','Beauty & Fashion','Health & Fitness','Food & Beverage','Finance','On demand Services','Home & Living','Education & Career','Recreation','OYP Business Guide'];
+const BGUIDE=['Transporters For Bihar','Pet Food Dealers','Event Organisers For Jagran','Tutorials For UGC Net Exam','Battery Operated Scooter Dealers-Ather Energy','Courier Services For USA','Transporters For Rajasthan','MCA Institutes','Tutorials For Ctet','Share Brokers-Angel One','Transporters For Punjab','LPG Conversion Kit Dealers','Event Organisers For Bhajan Sandhya','Bhojpuri Film Producers','Courier Services For Dubai','Khatu Shyam Bhajan Singers','Dairy Product Retailers-Amul','Bengali Sweet Retailers','Ayurvedic Doctors For Hair Fall Treatment','Overseas Education Consultants For Luxembourg','Tutorials For NIOS Class XII','Packers And Movers For Hyderabad','Dish Antenna Installation Services-Tata Sky','Event Organisers For DJ','Personal Loans-Axis Bank','Car Rental-Toyota','Marathi Books','Women Top Retailers','HD Makeup Artists','Cricket T Shirt Manufacturers','Ad Film Makers','ABC Fire Extinguisher Dealers','Solar Panel Dealers-Vikram Solar','Kick Scooter Dealers'];
+const QLINKS=["About us","Advertise","Investor Relations","Media","We're hiring","Testimonials","Customer Care","Feedback","Free Listing","Business Badge","What's New","OYP Collection","Report a Bug","Client Success Videos","B2B Sitemap","B2B India Sitemap","Sitemap","Return & Exchange Policy","Free GST Invoice Generator","MCA Data"];
+const VERTS=['B2B','All India','Doctors','Bills & Recharge','Cricket','Guides','News','Accommodation','Advertising & PR','Agriculture','Apparel','Astrology','Automobiles & Two Wheelers','Beauty & Personal Care','Business & Legal','Chemicals','Construction & Real Estate','Education','Electronic Component','Electronics','Energy','Engineering','Entertainment','Events & Wedding','Food & Beverage','Furniture','Health & Medical','Home & Garden','Housekeeping & Facility Management','Industrial Plants & Machinery','IT Components','Jewellery','Lights & Lighting','Luggage Bags & Cases','Office & School Supplies','Packaging & Printing','Pet & Pet Supplies','Placements','Public','Restaurant','Rubber & Plastics','Security & Protection','Sports & Entertainment','Textile & Leather','Toys & Games','Transportation & Shipping','Travel','Watches & Eyewear'];
+const FILTERS=['All','Restaurants','Doctors','Salons','Plumbers','Electricians','Gyms','Hotels','Photography'];
 
-function render(list){
-  const box=document.getElementById('results');
-  box.innerHTML="";
-  list.forEach(item=>{
-    box.innerHTML+=`<div class="listing">
-      <h3>${item.name}</h3>
-      <div class="rating">⭐ ${item.rating}</div>
-      <p>${item.category} • ${item.location}</p>
-      <button onclick="alert('Call ${item.name}')">Call</button>
-    </div>`
-  })
+/* ══════════════════════════════════
+   RENDER FUNCTIONS
+══════════════════════════════════ */
+function st(r){return[1,2,3,4,5].map(i=>`<span class="s ${i<=Math.round(r)?'on':''}">★</span>`).join('');}
+
+function renderNavDrop(){
+  document.getElementById('catDrop').innerHTML=CATS.map(c=>`
+    <div class="nav-cat-item" onclick="filterBy('${c.n}');closeDrop()">
+      <span class="nci-icon">${c.ic}</span><span class="nci-text">${c.n}</span>
+    </div>`).join('');
+}
+function renderCats(){
+  document.getElementById('catGrid').innerHTML=CATS.map(c=>`
+    <div class="cat-card" onclick="filterBy('${c.n}')">
+      <div class="cat-icon-wrap">${c.ic}</div>
+      <div class="cat-label">${c.n}</div>
+      <div class="cat-count">${c.c} listings</div>
+    </div>`).join('');
+}
+let activeFil='All';
+function renderFilters(a='All'){
+  document.getElementById('filterPills').innerHTML=FILTERS.map(f=>`
+    <span class="fp ${f===a?'on':''}" onclick="filterBy('${f}')">${f}</span>`).join('');
+}
+function renderBiz(filter='All',query=''){
+  let list=BIZDATA;
+  if(filter!=='All') list=list.filter(b=>b.cat===filter||b.cat+'s'===filter);
+  if(query){
+    const q=query.toLowerCase();
+    list=list.filter(b=>b.n.toLowerCase().includes(q)||b.cat.toLowerCase().includes(q)||b.tags.some(t=>t.toLowerCase().includes(q)));
+  }
+  if(!list.length){
+    document.getElementById('bizGrid').innerHTML=`
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-title">No results found</div>
+        <div class="empty-sub">Try a different category or search term</div>
+      </div>`;
+    return;
+  }
+  document.getElementById('bizGrid').innerHTML=list.map(b=>`
+    <div class="biz-card" onclick="openModal(${b.id})">
+      <div class="biz-thumb">
+        ${b.ic}
+        <span class="biz-thumb-badge ${b.prem?'bb-prem':b.open?'bb-open':'bb-closed'}">${b.prem?'⭐ Premium':b.open?'Open Now':'Closed'}</span>
+        ${b.prem?'<span class="biz-thumb-prem-icon">Verified ✓</span>':''}
+      </div>
+      <div class="biz-body">
+        <div class="biz-top">
+          <span class="biz-cat-tag">${b.cat}</span>
+          <span class="biz-dist">📍 ${b.dist}</span>
+        </div>
+        <div class="biz-name">${b.n}</div>
+        <div class="biz-stars-row">
+          <div class="stars">${st(b.r)}</div>
+          <span class="biz-rnum">${b.r}</span>
+          <span class="biz-rcount">(${b.rv.toLocaleString()} reviews)</span>
+        </div>
+        <div class="biz-meta">
+          <div class="biz-meta-row">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            ${b.addr}
+          </div>
+          <div class="biz-meta-row">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            ${b.time}
+          </div>
+        </div>
+        <div class="biz-chips">${b.tags.map(t=>`<span class="biz-chip">${t}</span>`).join('')}</div>
+        <div class="biz-footer">
+          <button class="btn-call" onclick="event.stopPropagation();showToast('📞 Calling ${b.n}…')">
+            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>
+            Call Now
+          </button>
+          <button class="btn-view" onclick="event.stopPropagation();openModal(${b.id})">View Details</button>
+          <button class="btn-save" id="sv-${b.id}" onclick="event.stopPropagation();toggleSave(${b.id})">🤍</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function renderHow(){
+  document.getElementById('howSteps').innerHTML=HOW_DATA.map((s,i)=>`
+    <div class="how-step">
+      <div class="how-step-num">${s.n}</div>
+      <span class="how-step-icon">${s.ic}</span>
+      <div class="how-title">${s.t}</div>
+      <div class="how-desc">${s.d}</div>
+      ${i<HOW_DATA.length-1?'<div class="how-connector">→</div>':''}
+    </div>`).join('');
+}
+function renderWhy(){
+  document.getElementById('whyGrid').innerHTML=WHY_DATA.map(w=>`
+    <div class="why-card">
+      <div class="why-icon">${w.ic}</div>
+      <div class="why-title">${w.t}</div>
+      <div class="why-desc">${w.d}</div>
+    </div>`).join('');
+}
+function renderTrust(){
+  document.getElementById('trustGrid').innerHTML=TRUST_DATA.map(t=>`
+    <div class="trust-card">
+      <span class="trust-icon">${t.ic}</span>
+      <div class="trust-num">${t.n}</div>
+      <div class="trust-label">${t.l}</div>
+    </div>`).join('');
+}
+function renderTrend(){
+  document.getElementById('trendGrid').innerHTML=TRENDING.map((t,i)=>`
+    <div class="trend-row" onclick="quickSearch('${t.replace(/'/g,' ')}')">
+      <span class="trend-n">#${String(i+1).padStart(2,'0')}</span>
+      <span class="trend-txt">${t}</span>
+      <span class="trend-arr">›</span>
+    </div>`).join('');
+}
+function renderDeals(){
+  document.getElementById('dealsStrip').innerHTML=DEALS.map(d=>`
+    <div class="deal-chip" onclick="showToast('🏷️ ${d.n}')">
+      <span style="font-size:15px">${d.ic}</span>
+      <span style="font-size:12.5px;font-weight:500;color:var(--text2)">${d.n}</span>
+      <span class="deal-badge">Offer</span>
+    </div>`).join('');
+}
+function renderTesti(){
+  document.getElementById('testiGrid').innerHTML=TESTI_DATA.map(t=>`
+    <div class="testi-card">
+      <div class="testi-stars">${[1,2,3,4,5].map(()=>'<span class="ts">★</span>').join('')}</div>
+      <div class="testi-text">"${t.t}"</div>
+      <div class="testi-bottom">
+        <div class="testi-av">${t.n[0]}</div>
+        <div>
+          <div class="testi-name">${t.n}</div>
+          <div class="testi-biz">📍 ${t.biz}</div>
+          <div class="testi-date">${t.d}</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function renderCities(){
+  document.getElementById('cityGrid').innerHTML=CITIES_DATA.map(c=>`
+    <div class="city-card" onclick="showToast('🏙️ Exploring businesses in ${c.n}…')">
+      <span class="city-emoji">${c.ic}</span>
+      <div>
+        <div class="city-name">${c.n}</div>
+        <div class="city-count">${c.b} businesses</div>
+      </div>
+    </div>`).join('');
+}
+function renderGuide(){
+  document.getElementById('guideCloud').innerHTML=GUIDE.map(g=>`<span class="t-pill" onclick="showToast('📖 ${g}')">${g}</span>`).join('');
+  document.getElementById('collCloud').innerHTML=COLL.map(c=>`<span class="t-pill" onclick="showToast('🗂️ ${c}')">${c}</span>`).join('');
+}
+function renderBGuide(){
+  document.getElementById('bguideGrid').innerHTML=BGUIDE.map(b=>`
+    <div class="bguide-item" onclick="showToast('🔍 ${b.replace(/'/g,' ')}')">
+      <div class="bg-dot"></div><span class="bg-txt">${b}</span>
+    </div>`).join('');
+}
+function renderQL(){document.getElementById('qlCloud').innerHTML=QLINKS.map(l=>`<span class="t-pill">${l}</span>`).join('');}
+function renderVerts(){document.getElementById('vertGrid').innerHTML=VERTS.map(v=>`<div class="vert-item">${v}</div>`).join('');}
+
+/* ══════════════════════════════════
+   SEARCH (LIVE)
+══════════════════════════════════ */
+let searchTimer;
+function onHeroInput(){
+  clearTimeout(searchTimer);
+  searchTimer=setTimeout(()=>{
+    const q=document.getElementById('heroQ').value.trim();
+    if(q.length>1){doHeroSearch(true);}
+    else if(q.length===0){clearSearch();}
+  },350);
+}
+function doHeroSearch(live=false){
+  const q=document.getElementById('heroQ').value.trim();
+  const loc=document.getElementById('heroL').value.trim()||'Chandigarh';
+  if(!q){showToast('💡 Enter what you are looking for!');return;}
+  renderFilters('All');renderBiz('All',q);activeFil='All';
+  document.getElementById('listTitle').textContent='🔍 Results for "'+q+'" in '+loc;
+  document.getElementById('listSub').textContent='Showing verified businesses matching your search';
+  const bar=document.getElementById('liveBar');
+  document.getElementById('liveBarText').textContent='Showing results for "'+q+'" in '+loc;
+  bar.classList.add('show');
+  document.getElementById('listings').scrollIntoView({behavior:'smooth',block:'start'});
+  if(!live) showToast('🔍 Searching "'+q+'" in '+loc+'…');
+  document.getElementById('navQ').value=q;
+}
+function doNavSearch(){
+  const q=document.getElementById('navQ').value.trim();
+  if(!q){return;}
+  document.getElementById('heroQ').value=q;
+  doHeroSearch();
+}
+function clearSearch(){
+  document.getElementById('heroQ').value='';
+  document.getElementById('navQ').value='';
+  document.getElementById('liveBar').classList.remove('show');
+  document.getElementById('listTitle').textContent='⭐ Top Rated Near You';
+  document.getElementById('listSub').textContent='Verified businesses, handpicked & highly rated by real users';
+  renderFilters('All');renderBiz('All');activeFil='All';
+}
+function quickSearch(q){
+  document.getElementById('heroQ').value=q;
+  doHeroSearch();
+}
+function filterBy(f){
+  activeFil=f;
+  renderFilters(f);
+  renderBiz(f,document.getElementById('heroQ').value.trim());
+  document.getElementById('listTitle').textContent=f==='All'?'⭐ Top Rated Near You':'⭐ Top '+f+' Near You';
+  document.getElementById('listings').scrollIntoView({behavior:'smooth'});
+  closeDrop();
 }
 
-function search(){
-  const s=document.getElementById('service').value.toLowerCase();
-  const l=document.getElementById('location').value.toLowerCase();
-
-  const filtered=data.filter(d=>
-    d.category.toLowerCase().includes(s) && d.location.toLowerCase().includes(l)
-  );
-
-  render(filtered.length?filtered:data);
+/* ══════════════════════════════════
+   MODAL
+══════════════════════════════════ */
+function openModal(id){
+  const b=BIZDATA.find(x=>x.id===id);if(!b)return;
+  document.getElementById('modalBox').innerHTML=`
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <span class="modal-icon">${b.ic}</span>
+    <div class="modal-cat">${b.cat}</div>
+    <div class="modal-name">${b.n}</div>
+    <div class="biz-stars-row" style="margin-bottom:14px">
+      <div class="stars">${st(b.r)}</div>
+      <span class="biz-rnum">${b.r}</span>
+      <span class="biz-rcount">(${b.rv.toLocaleString()} reviews)</span>
+    </div>
+    <p style="font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:16px">${b.about}</p>
+    <div class="modal-grid">
+      <div class="mg-item"><div class="mg-label">📍 Address</div><div class="mg-val">${b.addr}</div></div>
+      <div class="mg-item"><div class="mg-label">🕐 Timings</div><div class="mg-val">${b.time}</div></div>
+      <div class="mg-item"><div class="mg-label">📅 Est.</div><div class="mg-val">Since ${b.since}</div></div>
+      <div class="mg-item"><div class="mg-label">✅ Status</div><div class="mg-val" style="color:${b.open?'var(--green)':'var(--red)'}">${b.open?'Currently Open':'Closed Now'}</div></div>
+    </div>
+    <div class="biz-chips" style="margin-bottom:0">${b.tags.map(t=>`<span class="biz-chip">${t}</span>`).join('')}</div>
+    <div class="modal-acts">
+      <button class="m-call" onclick="showToast('📞 Calling ${b.n}…')">📞 Call ${b.ph.slice(0,5)}XXXXX</button>
+      <button class="m-wp" onclick="showToast('💬 Opening WhatsApp…')">💬 WhatsApp</button>
+    </div>`;
+  document.getElementById('modalOv').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(e){
+  if(!e||e.target===document.getElementById('modalOv')){
+    document.getElementById('modalOv').classList.remove('open');
+    document.body.style.overflow='';
+  }
+}
+const SAVED=new Set();
+function toggleSave(id){
+  const b=document.getElementById('sv-'+id);
+  if(SAVED.has(id)){SAVED.delete(id);b.textContent='🤍';b.classList.remove('on');showToast('Removed from saved');}
+  else{SAVED.add(id);b.textContent='❤️';b.classList.add('on');showToast('❤️ Saved to your list!');}
 }
 
-function quick(cat){
-  document.getElementById('service').value=cat;
-  search();
+/* ══════════════════════════════════
+   DROPDOWN
+══════════════════════════════════ */
+function toggleDrop(){document.getElementById('catWrap').classList.toggle('open');}
+function closeDrop(){document.getElementById('catWrap').classList.remove('open');}
+document.addEventListener('click',e=>{
+  const cw=document.getElementById('catWrap');
+  if(!cw.contains(e.target))cw.classList.remove('open');
+});
+
+/* ══════════════════════════════════
+   THEME
+══════════════════════════════════ */
+function toggleTheme(){
+  const d=document.documentElement;
+  const dark=d.getAttribute('data-theme')==='dark';
+  d.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('themeBtn').textContent=dark?'🌙':'☀️';
+  localStorage.setItem('oyp-theme',dark?'light':'dark');
+}
+(function(){
+  const s=localStorage.getItem('oyp-theme')||'light';
+  document.documentElement.setAttribute('data-theme',s);
+  document.getElementById('themeBtn').textContent=s==='dark'?'☀️':'🌙';
+})();
+
+/* ══════════════════════════════════
+   TOAST
+══════════════════════════════════ */
+let tt;
+function showToast(msg){
+  const el=document.getElementById('toast');
+  document.getElementById('toastTxt').textContent=msg;
+  el.classList.add('on');clearTimeout(tt);
+  tt=setTimeout(()=>el.classList.remove('on'),2800);
 }
 
-render(data);
+/* ══════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════ */
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');observer.unobserve(e.target);}});
+},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+function initReveal(){document.querySelectorAll('.rv,.rv2,.rv3').forEach(el=>observer.observe(el));}
+
+/* ══════════════════════════════════
+   KEYBOARD
+══════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeModal();closeDrop();}
+  if(e.key==='Enter'){
+    if(document.activeElement.id==='heroQ'||document.activeElement.id==='heroL') doHeroSearch();
+    if(document.activeElement.id==='navQ') doNavSearch();
+  }
+});
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
+renderNavDrop();renderCats();renderFilters();renderBiz();
+renderHow();renderWhy();renderTrust();renderTrend();
+renderDeals();renderTesti();renderCities();
+renderGuide();renderBGuide();renderQL();renderVerts();
+setTimeout(initReveal,100);
 </script>
-
 </body>
 </html>
